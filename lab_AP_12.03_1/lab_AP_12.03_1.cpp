@@ -1,85 +1,122 @@
 // lab_AP_12.03_1.cpp : This file contains the 'main' function. Program execution begins and ends there.
 #include <iostream>
+
 using namespace std;
 
-struct Node {
+// Структура для представлення елемента списку
+struct Node 
+{
     int data;
     Node* next;
     Node* prev;
-};
 
-class List {
-public:
-    Node* head;
-    Node* tail;
-public:
-    List() {
-        head = NULL;
-        tail = NULL;
-    }
-
-    void addToEnd(int value) {
-        Node* temp = new Node;
-        temp->data = value;
-        temp->next = NULL;
-        temp->prev = tail;
-        if (tail != NULL) {
-            tail->next = temp;
-        }
-        tail = temp;
-        if (head == NULL) {
-            head = temp;
-        }
-    }
-
-    void printList() {
-        Node* temp = head;
-        while (temp != NULL) {
-            cout << temp->data << " ";
-            temp = temp->next;
-        }
-        cout << endl;
-    }
-
-    Node* getHead() {
-        return head;
+    Node(int data) 
+    {
+        this->data = data;
+        next = NULL;
+        prev = NULL;
     }
 };
 
-void deleteElementsBeforeValue(List& list, int value) {
-    Node* current = list.getHead();
-    while (current != NULL && current->data != value) {
-        Node* toDelete = current->prev;
-        if (toDelete != NULL) {
-            if (toDelete->prev != NULL) {
-                toDelete->prev->next = current;
-            }
-            else {
-                list.head = current;
-            }
-            current->prev = toDelete->prev;
-            delete toDelete;
-        }
-        current = current->next;
+// Функція для додавання елемента до списку
+void push(Node** head, int data) 
+{
+    Node* newNode = new Node(data);
+    newNode->next = *head;
+    if (*head != NULL) 
+    {
+        (*head)->prev = newNode;
     }
+    *head = newNode;
 }
 
-int main() {
-    List list;
-    list.addToEnd(1);
-    list.addToEnd(2);
-    list.addToEnd(3);
-    list.addToEnd(4);
-    list.addToEnd(5);
+// Функція для видалення елемента зі списку
+void deleteNode(Node** head, Node* node) 
+{
+    if (*head == NULL || node == NULL) 
+    {
+        return;
+    }
+    if (*head == node)
+    {
+        *head = node->next;
+    }
+    if (node->next != NULL) 
+    {
+        node->next->prev = node->prev;
+    }
+    if (node->prev != NULL)
+    {
+        node->prev->next = node->next;
+    }
+    delete node;
+}
 
-    cout << "List before deletion: ";
-    list.printList();
+// Функція для виведення списку на екран
+void printList(Node* head) 
+{
+    while (head != NULL) 
+    {
+        cout << head->data << " ";
+        head = head->next;
+    }
+    cout << endl;
+}
 
-    int valueToDelete = 4;
-    deleteElementsBeforeValue(list, valueToDelete);
+// Функція для видалення елементів перед елементом зі значенням value
+void deleteBeforeValue(Node** headRef, int value) 
+{
+    if (*headRef == nullptr || (*headRef)->next == nullptr) 
+    {
+        // якщо списку не існує або він містить менше двох елементів
+        return;
+    }
 
-    cout << "List after deletion: ";
-    list.printList();
+    Node* current = *headRef;
+    Node* prev = nullptr;
+    Node* prevPrev = nullptr;
+
+    while (current != nullptr && current->data != value) 
+    {
+        prevPrev = prev;
+        prev = current;
+        current = current->next;
+    }
+
+    if (current == nullptr || prevPrev == nullptr) 
+    {
+        // якщо елемент не знайдено або він є першим у списку
+        return;
+    }
+
+    prevPrev->next = current;
+    delete prev;
+}
+
+
+
+int main()
+{
+    Node* head = NULL;
+
+    // Створення списку
+    push(&head, 1);
+    push(&head, 2);
+    push(&head, 3);
+    push(&head, 4);
+    push(&head, 5);
+    push(&head, 6);
+    push(&head, 7);
+    push(&head, 8);
+
+    // Виведення списку
+    cout << "List before deleting:" << endl;
+    printList(head);
+    deleteBeforeValue(&head, 6);
+
+    // Виведення списку після видалення елементів
+    cout << "List after deleting:" << endl;
+    printList(head);
 
     return 0;
 }
