@@ -3,14 +3,13 @@
 
 using namespace std;
 
-// Структура для представлення елемента списку
-struct Node 
+struct Node
 {
     int data;
     Node* next;
     Node* prev;
 
-    Node(int data) 
+    Node(int data)
     {
         this->data = data;
         next = NULL;
@@ -18,22 +17,20 @@ struct Node
     }
 };
 
-// Функція для додавання елемента до списку
-void push(Node** head, int data) 
+void push(Node** head, int data)
 {
     Node* newNode = new Node(data);
     newNode->next = *head;
-    if (*head != NULL) 
+    if (*head != NULL)
     {
         (*head)->prev = newNode;
     }
     *head = newNode;
 }
 
-// Функція для видалення елемента зі списку
-void deleteNode(Node** head, Node* node) 
+void deleteNode(Node** head, Node* node)
 {
-    if (*head == NULL || node == NULL) 
+    if (*head == NULL || node == NULL)
     {
         return;
     }
@@ -41,7 +38,7 @@ void deleteNode(Node** head, Node* node)
     {
         *head = node->next;
     }
-    if (node->next != NULL) 
+    if (node->next != NULL)
     {
         node->next->prev = node->prev;
     }
@@ -52,10 +49,9 @@ void deleteNode(Node** head, Node* node)
     delete node;
 }
 
-// Функція для виведення списку на екран
-void printList(Node* head) 
+void printList(Node* head)
 {
-    while (head != NULL) 
+    while (head != NULL)
     {
         cout << head->data << " ";
         head = head->next;
@@ -63,43 +59,31 @@ void printList(Node* head)
     cout << endl;
 }
 
-// Функція для видалення елементів перед елементом зі значенням value
-void deleteBeforeValue(Node** headRef, int value) 
+void deleteBeforeValue(Node** headRef, int value)
 {
-    if (*headRef == nullptr || (*headRef)->next == nullptr) 
+    if (*headRef == nullptr || (*headRef)->next == nullptr)
     {
-        // якщо списку не існує або він містить менше двох елементів
         return;
     }
 
     Node* current = *headRef;
     Node* prev = nullptr;
-    Node* prevPrev = nullptr;
 
-    while (current != nullptr && current->data != value) 
+    while (current != nullptr)
     {
-        prevPrev = prev;
+        if (current->data == value && prev != nullptr)
+        {
+            deleteNode(headRef, prev);
+        }
         prev = current;
         current = current->next;
     }
-
-    if (current == nullptr || prevPrev == nullptr) 
-    {
-        // якщо елемент не знайдено або він є першим у списку
-        return;
-    }
-
-    prevPrev->next = current;
-    delete prev;
 }
-
-
 
 int main()
 {
     Node* head = NULL;
-
-    // Створення списку
+    push(&head, 6);
     push(&head, 1);
     push(&head, 2);
     push(&head, 3);
@@ -108,13 +92,13 @@ int main()
     push(&head, 6);
     push(&head, 7);
     push(&head, 8);
+    push(&head, 6);
 
-    // Виведення списку
     cout << "List before deleting:" << endl;
     printList(head);
+
     deleteBeforeValue(&head, 6);
 
-    // Виведення списку після видалення елементів
     cout << "List after deleting:" << endl;
     printList(head);
 
